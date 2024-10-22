@@ -8,9 +8,9 @@
 
 ################################################################################
 # Create a stage for building the application.
-ARG GO_VERSION=1.22.3
+ARG GO_VERSION=1.23.2
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS build
-LABEL org.opencontainers.image.source=https://github.com/dreamsofcode-io/guestbook
+LABEL org.opencontainers.image.source=https://github.com/bridyboo/ProdGoGuestbook
 WORKDIR /src
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
