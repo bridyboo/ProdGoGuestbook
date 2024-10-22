@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	godotenv.Load()
+	godotenv.Load("guestbook.env")
 
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
