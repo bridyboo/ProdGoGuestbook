@@ -9,7 +9,8 @@
 # https://github.com/docker/awesome-compose
 services:
   server:
-    image: ghcr.io/dreamsofcode-io/guestbook/guestbook
+    build:
+      context: . # Directory for the dockerfile location
     container_name: guestbook
     ports:
       - 8080:8080
