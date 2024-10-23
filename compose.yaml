@@ -55,4 +55,4 @@ volumes:
   db-data:
 secrets:
   db-password:
-    file: guestbook/db/password.txt
+    file: ../db/password.txt
