@@ -8,12 +8,25 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
+  reverse-proxy:
+    image: traefik:v3.1
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
+    ports:
+      #The HTTP port
+      - "80:80"
+      #The web UI (api insecure allows this)
+      - "8080:8080"
+    volumes:
+      # So traefik can listen to docker events
+      - /var/run/docker.sock:/var/run/docker.sock
   server:
     build:
       context: . # Directory for the dockerfile location
     container_name: guestbook
-    ports:
-      - 8080:8080
+    labels:
+      - "traefik.http.routers.guestbook.rule=Host(`nondeterministic.xyz`)"
     secrets:
       - db-password
     environment:
