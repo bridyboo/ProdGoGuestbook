@@ -24,7 +24,7 @@ services:
   server:
     build:
       context: . # Directory for the dockerfile location
-    container_name: guestbook
+    # container_name: guestbook  # not necessary because of replicas
     labels:
       - "traefik.http.routers.guestbook.rule=Host(`nondeterministic.xyz`)"
     secrets:
@@ -36,6 +36,9 @@ services:
       - POSTGRES_DB=guestbook
       - POSTGRES_PORT=5432
       - POSTGRES_SSLMODE=disable
+    deploy:
+      mode: replicated
+      replicas: 3
     depends_on:
       db:
         condition: service_healthy
