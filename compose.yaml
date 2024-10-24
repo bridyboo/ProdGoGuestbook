@@ -13,20 +13,36 @@ services:
     command:
       - "--api.insecure=true"
       - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.web.address=:80"
+      - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entryPoints.websecure.address=:443"
+      - "--certificatesResolvers.myresolver.acme.tlsChallenge=true" 
+      - "--certificatesresolvers.myresolver.acme.email=pheonixblade25@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--log.level=DEBUG"
     ports:
-      #The HTTP port
-      - "80:80"
+      #The HTTPS port
+      - "443:443"
+      - "80:80"  #The Http port
       #The web UI (api insecure allows this)
       - "8080:8080"
     volumes:
+      - ./letsencrypt:/letsencrypt
       # So traefik can listen to docker events
       - /var/run/docker.sock:/var/run/docker.sock
+    user: "root:root"
   server:
     build:
       context: . # Directory for the dockerfile location
     # container_name: guestbook  # not necessary because of replicas
     labels:
+      - "traefik.enable=true"
       - "traefik.http.routers.guestbook.rule=Host(`nondeterministic.xyz`)"
+      - "traefik.http.routers.guestbook.entrypoints=websecure"  # Add entry point for HTTPS
+      - "traefik.http.routers.guestbook.tls=true"
+      - "traefik.http.routers.guestbook.tls.certresolver=myresolver"  # Add this line
     secrets:
       - db-password
     environment:
@@ -69,6 +85,7 @@ services:
       retries: 5
 volumes:
   db-data:
+#  letsencrypt:
 secrets:
   db-password:
     file: ../db/password.txt
