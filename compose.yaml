@@ -3,6 +3,12 @@
 # https://docs.docker.com/go/compose-spec-reference/
 
 services:
+  watchtower:
+    image: containrrr/watchtower
+    command:
+      - "--label-enable"
+      - "--interval"
+      - "30"
   reverse-proxy:
     image: traefik:v3.1
     command:
@@ -36,6 +42,7 @@ services:
       - "traefik.http.routers.guestbook.entrypoints=websecure"
       - "traefik.http.routers.guestbook.tls=true"
       - "traefik.http.routers.guestbook.tls.certresolver=myresolver"
+      - "com.centurylinklabs.watchtower.enable=true"
     secrets:
       - db-password
     environment:
