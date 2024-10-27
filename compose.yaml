@@ -2,11 +2,6 @@
 # If you need more help, visit the Docker Compose reference guide at
 # https://docs.docker.com/go/compose-spec-reference/
 
-# Here the instructions define your application as a service called "server".
-# This service is built from the Dockerfile in the current directory.
-# You can add other services your application may depend on here, such as a
-# database or a cache. For examples, see the Awesome Compose repository:
-# https://github.com/docker/awesome-compose
 services:
   reverse-proxy:
     image: traefik:v3.1
@@ -18,31 +13,29 @@ services:
       - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
       - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
       - "--entryPoints.websecure.address=:443"
-      - "--certificatesResolvers.myresolver.acme.tlsChallenge=true" 
+      - "--certificatesResolvers.myresolver.acme.tlsChallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=pheonixblade25@gmail.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-      - "--log.level=DEBUG"
+
     ports:
-      #The HTTPS port
-      - "443:443"
-      - "80:80"  #The Http port
-      #The web UI (api insecure allows this)
-      - "8080:8080"
+      - "443:443"  # HTTPS port
+      - "80:80"    # HTTP port
+      - "8080:8080" # Web UI (api insecure allows this)
     volumes:
       - ./letsencrypt:/letsencrypt
-      # So traefik can listen to docker events
       - /var/run/docker.sock:/var/run/docker.sock
     user: "root:root"
-  server:
+
+  guestbookProdGo:
+    image: ghcr.io/bridyboo/guestbook:prod # Image name for GHCR
     build:
-      context: . # Directory for the dockerfile location
-    # container_name: guestbook  # not necessary because of replicas
+      context: . # Directory for the Dockerfile location
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.guestbook.rule=Host(`nondeterministic.xyz`)"
-      - "traefik.http.routers.guestbook.entrypoints=websecure"  # Add entry point for HTTPS
+      - "traefik.http.routers.guestbook.entrypoints=websecure"
       - "traefik.http.routers.guestbook.tls=true"
-      - "traefik.http.routers.guestbook.tls.certresolver=myresolver"  # Add this line
+      - "traefik.http.routers.guestbook.tls.certresolver=myresolver"
     secrets:
       - db-password
     environment:
@@ -59,12 +52,6 @@ services:
       db:
         condition: service_healthy
 
-# The commented out section below is an example of how to define a PostgreSQL
-# database that your application can use. `depends_on` tells Docker Compose to
-# start the database before your application. The `db-data` volume persists the
-# database data between container restarts. The `db-password` secret is used
-# to set the database password. You must create `db/password.txt` and add
-# a password of your choosing to it before running `docker compose up`.
   db:
     image: postgres
     restart: always
@@ -83,9 +70,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
 volumes:
   db-data:
-#  letsencrypt:
+  letsencrypt:
 secrets:
   db-password:
     file: ../db/password.txt
