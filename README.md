@@ -1,6 +1,12 @@
-# Guestbook
+# ProdGoGuestbook
 
-This is the code used for the Dreams of Code video on setting up a production ready VPS using Docker, Docker Compose, Traefik, and Watchtower.
+This is a PROD-ready deployment of a Go-service with a postgress DB on an AWS VPS; The frontend is purely from https://github.com/dreamsofcode-io/guestbook
+The compose.yaml will have the full list of services maintaining the availability for the website. 
+services:
+- Watchtower -> https://github.com/containrrr/watchtower | automated deployment
+- Traefik -> HTTPS TLS certificate, reverse-proxy, http redirect to https
+- postgres -> database
+- docker guestbook -> 3 instances running parallel for availability
 
 ## Usage
 
@@ -10,4 +16,3 @@ VPS using the `docker compose up` command.
 To install docker compose, please refer to the official docker instructions.
 
 https://docs.docker.com/engine/install/ubuntu/
-# ProdGoGuestbook
